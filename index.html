@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+  Host this folder on GitHub Pages as the repo `applytics-tiktok-redirect`, so it's served at
+  https://zolcer.github.io/applytics-tiktok-redirect/ — the `redirectURI` in TikTokSignInProvider.swift
+  and the Redirect URI / Website URL in the TikTok developer portal.
+
+  Two jobs:
+  - OAuth redirect: TikTok requires an HTTPS redirect_uri (no custom URL schemes), so when TikTok
+    sends the user here with `?code=…` or `?error=…`, the page bounces straight into the app via
+    the `applytics-tiktok://` scheme ASWebAuthenticationSession is listening for.
+  - Website URL: opened without those parameters, it's a small landing page for the app with
+    links to the privacy policy and terms TikTok asks for.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Allympo</title>
+  <script>
+    // Forward the exact query string TikTok appended into the app, matching `callbackURLScheme`
+    // in TikTokSignInProvider.swift.
+    var params = new URLSearchParams(window.location.search);
+    if (params.has("code") || params.has("error")) {
+      window.location.replace("applytics-tiktok://oauth-callback" + window.location.search);
+    }
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>Allympo</h1>
+    <p class="lead">A personal analytics app for iPhone and iPad that shows statistics of your own accounts in one place — App Store Connect, Google Analytics, Facebook, Instagram, TikTok and X.</p>
+    <p>With TikTok, Allympo shows your profile's follower count and the views, likes, comments and shares of your own videos. It only reads data — it never posts or changes anything on your account.</p>
+    <p id="redirecting" hidden>Returning to the Allympo app…</p>
+    <nav>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+    </nav>
+  </main>
+  <script>
+    if (params.has("code") || params.has("error")) {
+      document.getElementById("redirecting").hidden = false;
+    }
+  </script>
+</body>
+</html>
